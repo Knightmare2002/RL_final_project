@@ -1,5 +1,3 @@
-# RL_project_colab
-
 # Project on Reinforcement Learning (Course project MLDL 2025 - POLITO)
 ### Teaching assistants: Andrea Protopapa and Davide Buoso
 
