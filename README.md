@@ -260,7 +260,7 @@ webots
 
 ## Folder Structure
 ```bash
-Projects_extension/
+Project_extension/
 ├── controllers/              # Webots controllers (e.g., tesla_controller.py)
 ├── worlds/                   # Webots simulation world (.wbt files)
 ├── model_dir/                # Final saved models (e.g., best_model.zip)
