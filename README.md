@@ -1,34 +1,177 @@
-# Project on Reinforcement Learning (Course project MLDL 2025 - POLITO)
-### Teaching assistants: Andrea Protopapa and Davide Buoso
+# RL_project_final
+## Project Abstract
 
-Starting code for "Project 4: Reinforcement Learning" course project of MLDL 2025 at Polytechnic of Turin. Official assignment at [Google Doc](https://docs.google.com/document/d/16Fy0gUj-HKxweQaJf97b_lTeqM_9axJa4_SdqpP_FaE/edit?usp=sharing).
+A custom reinforcement learning environment is developed in Webots, where an autonomous vehicle
+navigates a deterministic track with randomly positioned obstacles. The setup evaluates control policies under varying conditions while preserving a fixed
+route structure. Training is conducted using two
+state-of-the-art continuous control algorithms: Soft
+Actor-Critic (SAC) and Proximal Policy Optimization (PPO). To improve generalization, Uniform Domain Randomization (UDR) is applied to obstacle positions and properties, introducing controlled variability across episodes. This strategy enhances robustness
+by exposing the agent to diverse configurations during
+training. Comparative results show gains in training stability, sample efficiency, and generalization to
+unseen scenarios, highlighting UDR’s advantage over
+static environments. The findings support the role
+of domain randomization in sim-to-real transfer for
+autonomous driving.
+
+---
+
+## Table of Contents
+
+- [Features](#features)
+- [Installation](#installation)
+- [Folder Structure](#folder-structure)
+- [How It Works](#how-it-works)
+- [Training Instructions](#training-instructions)
+- [Evaluation](#evaluation)
+- [Logging and Monitoring](#logging-and-monitoring)
+- [Troubleshooting](#troubleshooting)
+- [Author](#author)
+
+---
+
+## Features
+
+- Webots-based Tesla simulation environment
+- Custom Gymnasium-compatible Python environment
+- Socket-based communication between Webots and Python
+- Reinforcement Learning with Stable-Baselines3 (e.g., PPO, SAC)
+- Parallel training via `SubprocVecEnv`
+- Reward shaping for safe driving and obstacle avoidance
+- Model checkpointing and logging (W&B + TensorBoard)
+
+---
+
+## Installation
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/Polixide/RL_project_final.git
+cd RL_project_final
+```
+
+### 2. Create and Activate a Virtual Environment (Optional but Recommended)
+```
+python3 -m venv rl_env
+source rl_env/bin/activate      
+# On Windows: rl_env\Scripts\activate
+```
+### 3. Install All Python Dependencies
+```
+pip install -r requirements.txt
+```
+### 4. Install Webots 2025
+Go to the official Cyberbotics website: https://cyberbotics.com/#download ,
+or use the direct link:
+```
+wget https://github.com/cyberbotics/webots/releases/download/R2025a/webots-R2025a-x86-64.tar.bz2
+```
+Extract and install:
+```
+tar -xjf webots-R2025a-x86-64.tar.bz2
+sudo mv webots /opt/webots
+```
+You can now run Webots using:
+```
+webots
+```
 
 
-## Getting started
+## Folder Structure
+```bash
+RL_project_final/
+├── controllers/              # Webots controllers (e.g., tesla_controller.py)
+├── worlds/                   # Webots simulation world (.wbt files)
+├── model_dir/                # Final saved models (e.g., best_model.zip)
+├── checkpoint_dir/           # Intermediate checkpoints (only contents ignored)
+│   └── .gitkeep
+├── tb_logs/                  # TensorBoard logs (only contents ignored)
+│   └── .gitkeep
+├── wandb/                    # Weights & Biases logs (only contents ignored)
+│   └── .gitkeep
+├── rl_env/                   # your python virtual environment with all the dependencies
+│  
+├── webots_remote_env.py      # Webots socket communication handler
+├── train_PPO.py              # PPO training script
+├── train_SAC.py              # SAC training script
+├── test_PPO.py               # PPO evaluation script
+├── test_SAC.py               # SAC evaluation script
+├── run_PPO.sh                # Shell script to launch PPO training
+├── run_SAC.sh                # Shell script to launch SAC training
+├── requirements.txt          # All Python dependencies
+└── README.md                 # Project documentation
 
-Before starting to implement your own code, make sure to:
-1. read and study the material provided (see Section 1 in the assignment)
-2. read the documentation of the main packages you will be using ([mujoco-py](https://github.com/openai/mujoco-py), [Gym](https://github.com/openai/gym), [stable-baselines3](https://stable-baselines3.readthedocs.io/en/master/index.html))
-3. play around with the code in the template to familiarize with all the tools. Especially with the `test_random_policy.py` script.
+```
+## How It Works
+- Webots runs a 3D world with a Tesla robot.
+
+- The robot uses tesla_controller.py which acts as a socket server.
+
+- Python scripts (e.g., train.py) act as socket clients and communicate with the controller.
+
+- The RL agent sends reset, step, and exit commands.
+
+- Observations are gathered from sensors (e.g., distances, camera).
+
+- Rewards guide learning to avoid obstacles and drive safely.
+
+- Logging is done via W&B and TensorBoard.
+
+## Training Instructions
 
 
-### Remotely on Google Colab
 
-Alternatively, you may also complete the project on [Google Colab](https://colab.research.google.com/):
+Start Training
+```
+# For PPO training
+./run_PPO.sh
 
-- Download the files contained in the `colab_template` folder in this repo.
-- Load the `.ipynb` files on [https://colab.research.google.com/](colab) and follow the instructions on each script to run the experiments.
+# For SAC training
+./run_SAC.sh
+```
+Training uses multiple environments in parallel via SubprocVecEnv. You can adjust the number of instances and hyperparameters inside train.py.
 
-NOTE 1: rendering is currently **not** officially supported on Colab, making it hard to see the simulator in action. We recommend that each group manages to play around with the visual interface of the simulator at least once (e.g. using a Linux system), to best understand what is going on with the underlying Hopper environment.
+## Evaluation
+Step 1 — Open Webots
+Launch the simulation:
 
-NOTE 2: you need to stay connected to the Google Colab interface at all times for your python scripts to keep training.
 
+```
+webots worlds/your_world.wbt
+```
+**WARNING: Make sure your robot (Tesla) uses tesla_controller.py as the controller.**
 
+Step 2 - Launch the test.py file
+```
+python test_ALGO.py 
+```
+**You can see the car movements in webots while the test is running.**
+
+## Logging and Monitoring
+Before first use:
+```
+wandb login
+```
+Training logs and plots are available on https://wandb.ai under your account.
 
 ## Troubleshooting
-- General installation guide and troubleshooting: [Here](https://docs.google.com/document/d/1j5_FzsOpGflBYgNwW9ez5dh3BGcLUj4a/edit?usp=sharing&ouid=118210130204683507526&rtpof=true&sd=true)
-- If having trouble while installing mujoco-py, see [#627](https://github.com/openai/mujoco-py/issues/627) to install all dependencies through conda.
-- If installation goes wrong due to gym==0.21 as `error in gym setup command: 'extras_require'`, see https://github.com/openai/gym/issues/3176. There is a problem with the version of setuptools.
-- if you get a `cannot find -lGL` error when importing mujoco_py for the first time, then have a look at my solution in [#763](https://github.com/openai/mujoco-py/issues/763#issuecomment-1519090452)
-- if you get a `fatal error: GL/osmesa.h: No such file or directory` error, make sure you export the CPATH variable as mentioned in mujoco-py[#627](https://github.com/openai/mujoco-py/issues/627)
-- if you get a `Cannot assign type 'void (const char *) except * nogil' to 'void`, then run `pip install "cython<3"` (see issue [#773](https://github.com/openai/mujoco-py/issues/773))
+
+- GitHub Password Auth Failed:
+Use a Personal Access Token (PAT) instead of your GitHub password.
+→ Create Token
+
+- Folders Not Being Pushed to Git:
+Add a .gitkeep file inside empty folders that are otherwise ignored by .gitignore.
+
+- Socket Connection Error:
+Ensure Webots is running and listening on the correct port.
+You can set PORT manually in your environment or use the default (e.g., 10000).
+
+## Authors
+
+- Daniele Catalano (@Polixide) - Politecnico di Torino , Data Science & Engineering
+- Samuele Caruso (@Knightmare2002) - Politecnico di Torino , Data Science & Engineering
+
+- Francesco Dal Cero (@Dalceeee) - Politecnico di Torino , Data Science & Engineering
+
+- Ramadan Mehmetaj (@Danki02) - Politecnico di Torino , Data Science & Engineering
