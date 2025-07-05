@@ -16,7 +16,7 @@ class CustomHopper(MujocoEnv, utils.EzPickle):
         MujocoEnv.__init__(self, 4)
         utils.EzPickle.__init__(self)
 
-        self.enable_udr = False # CHANGE HERE TO APPLY DOMAIN RANDOMIZATION
+        self.enable_udr = True # CHANGE HERE TO APPLY DOMAIN RANDOMIZATION
 
         if domain == 'source':  # Source environment has an imprecise torso mass (1kg shift)
             self.sim.model.body_mass[1] -= 1.0

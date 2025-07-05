@@ -1,1 +1,4 @@
 mldl_env/
+videos/
+tb_logs/
+wandb/
