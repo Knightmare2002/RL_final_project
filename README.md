@@ -40,7 +40,7 @@ Uniform Domain Randomization (UDR) is applied to all link masses except the tors
 - [Installation](#installation)
 - [Folder Structure](#folder-structure)
 - [How It Works](#how-it-works)
-- [Training Instructions](#training-instructions)
+- [Training Instructions](#training)
 - [Evaluation](#evaluation)
 - [Logging and Monitoring](#logging-and-monitoring)
 - [Troubleshooting](#troubleshooting)
@@ -177,6 +177,7 @@ To evaluate a trained agent, run the corresponding evaluation script for the des
 
 ```bash
 python ALGO/test_ALGO.py
+```
 ---
 
 ## Logging and Monitoring
