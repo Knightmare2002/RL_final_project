@@ -21,9 +21,9 @@ display = Display(visible=0, size=(1400, 900))
 display.start()
 
 # Inizializza wandb
-wandb.init(project="RL_gym_hopper", name="PPO_test_comparison_UDR_v1", config={
+wandb.init(project="RL_gym_hopper", name="PPO_test_comparison_v4", config={
     "episodes": 50,
-    "environments": ["source->source", "source->target"]
+    "environments": ["source->source", "source->target","target->target"]
 })
 
 # Parametri di test
@@ -31,9 +31,9 @@ test_episodes = 50
 
 # Configurazioni: (etichetta, modello_path, env_id)
 configs = [
-    ("source->source", "models/PPO_1M_SOURCE_UDR.mdl", "CustomHopper-source-v0"),
-    ("source->target", "models/PPO_1M_SOURCE_UDR.mdl", "CustomHopper-target-v0"),
-    #("target->target", "models/PPO_1M_TARGET_V2.mdl", "CustomHopper-target-v0"),
+    ("source->source", "models/PPO_1M_SOURCE_V4.mdl", "CustomHopper-source-v0"),
+    ("source->target", "models/PPO_1M_SOURCE_V4.mdl", "CustomHopper-target-v0"),
+    ("target->target", "models/PPO_1M_TARGET_V4.mdl", "CustomHopper-target-v0"),
 ]
 
 all_results = {}
@@ -48,7 +48,7 @@ for label, model_path, env_id in configs:
     # Registra solo il video dell’ultima ep. del primo test
     env = gym.make(env_id)
 
-    env = RecordVideo(env, video_folder="./videos", episode_trigger=lambda ep: ep == test_episodes - 1)
+    env = RecordVideo(env, video_folder=f"./videos/{label}/", episode_trigger=lambda ep: ep == test_episodes - 1)
 
     returns = []
 
@@ -76,7 +76,7 @@ for label, model_path, env_id in configs:
     })
 
     env.close()
-    print("Video salvato nella cartella ./videos")
+    print(f"Video salvato nella cartella ./videos/{label}")
 
 # Log grafico a barre
 bar_table = wandb.Table(data=[[k, v[0]] for k, v in all_results.items()], columns=["config", "avg_return"])
@@ -92,14 +92,14 @@ df = pd.DataFrame(box_data, columns=["Configuration", "Reward"])
 
 # Plot con seaborn/matplotlib
 plt.figure(figsize=(10, 8))
-sns.boxplot(x="Configuration", y="Reward", data=df,palette=["blue"] * df["Configuration"].nunique())
+sns.boxplot(x="Configuration", y="Reward", data=df,palette=["green"] * df["Configuration"].nunique())
 plt.title("Reward Distribution per Configuration")
 plt.ylabel("Reward")
 plt.grid(True)
 
 # Salva e logga con wandb
-plt.savefig("boxplot_UDR_v1.png")
-wandb.log({"Reward Distribution (BoxPlot)": wandb.Image("boxplot_UDR_v1.png")})
+plt.savefig("boxplot_v4.png")
+wandb.log({"Reward Distribution (BoxPlot)": wandb.Image("boxplot_v4.png")})
 
 
 
